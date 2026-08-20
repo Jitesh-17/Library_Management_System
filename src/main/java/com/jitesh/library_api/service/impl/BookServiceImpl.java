@@ -1,112 +1,103 @@
 package com.jitesh.library_api.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.jitesh.library_api.dto.BookRequest;
 import com.jitesh.library_api.exception.BookNotFoundException;
-import  com.jitesh.library_api.model.Book;
+import com.jitesh.library_api.model.Book;
+import  com.jitesh.library_api.repository.BookRepository;
 import com.jitesh.library_api.service.BookService;
 
 @Service
 public class BookServiceImpl implements BookService {
     
-    private final List<Book> books = new ArrayList<>();
+    private final BookRepository bookRepository;
 
-    public BookServiceImpl(){
-        books.add(new Book(1L,"Atomic Habits","James Clear",499.0));
-        books.add(new Book(2l,"Clean Code","Robert C Martin",699.0));
+    public BookServiceImpl(BookRepository bookRepository){
+        this.bookRepository=bookRepository;
     }
+
 
     @Override
-    public List<Book> getAllBooks(){
-        return books;
+    public List<Book> getAllBooks() {
+    return bookRepository.findAll();
     }
 
-    @Override
-    public Book addBook(BookRequest request){
-        Book book = new Book(
-            (long) (books.size()+1),
-            request.getTitle(),
-            request.getAuthor(),
-            request.getPrice()
-        );
-        books.add(book);
+  @Override
+public Book addBook(BookRequest request) {
 
-        return book;
-    }
+    Book book = new Book();
+
+    book.setTitle(request.getTitle());
+    book.setAuthor(request.getAuthor());
+    book.setPrice(request.getPrice());
+
+    return bookRepository.save(book);
+}
 
     @Override
     public Book getBookById(Long id){
-        for(Book book:books){
-            if(book.getId().equals(id)){
-                return book;
-            }
-        }
-        throw new BookNotFoundException("Book not found with this id"+id);
+        return bookRepository.findById(id)//return type Optional<T> to prevent null pointer exception
+        .orElseThrow(() ->
+                new BookNotFoundException("Book not found with id: " + id));
     }
 
-    @Override
-    public Book updateBook(Long id,BookRequest request){
-        for(Book book:books){
-            if(book.getId().equals(id)){
-                book.setTitle(book.getTitle());
-                book.setAuthor(book.getAuthor());
-                book.setPrice(book.getPrice());
+   @Override
+    public Book updateBook(Long id, BookRequest request) {
 
-                return book;
-            }
-        }
-        throw new BookNotFoundException("Book not found with this id"+id);
+    Book book = bookRepository.findById(id)
+            .orElseThrow(() ->
+                    new BookNotFoundException(
+                            "Book not found with id: " + id
+                    ));
+
+    book.setTitle(request.getTitle());
+    book.setAuthor(request.getAuthor());
+    book.setPrice(request.getPrice());
+
+    return bookRepository.save(book);
+    }
+    @Override
+    public void deleteBook(Long id) {  
+
+    if (!bookRepository.existsById(id)) {
+        throw new BookNotFoundException(
+                "Book not found with id: " + id
+        );
     }
 
-    @Override
-    public void deleteBook(Long id){
-        for(int i=0;i<books.size();i++){
-            if(books.get(i).getId().equals(id)){
-                books.remove(i);
-                return;
-            }
-        }
-        throw new BookNotFoundException("Book not found with this id"+id);
+        bookRepository.deleteById(id);
     }
 
     @Override
     public List<Book> searchBooksByTitle(String title){
-        List<Book> result = new ArrayList<>();
-
-          for (Book book : books) {
-
-            if (book.getTitle().toLowerCase()
-                .contains(title.toLowerCase())) {
-
-            result.add(book);
-            }
-            if (result.isEmpty()) {
-                throw new BookNotFoundException( "No books found with title: " + title);
-            }
-            
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("Title search cannot be empty");
         }
-        return result;
+
+        List<Book> books = bookRepository.findByTitleContainingIgnoreCase(title);
+
+        if(books.isEmpty()){
+            throw new BookNotFoundException("No books found with title: "+ title);
+        }
+        return books;
     }
 
     @Override
     public List<Book> getBooksByAuthor(String author){
-         List<Book> result = new ArrayList<>();
-
-        for (Book book : books) {
-
-             if (book.getAuthor().equalsIgnoreCase(author)) {
-            result.add(book);
-            }
+        if(author == null || author.trim().isEmpty()){
+            throw new IllegalArgumentException("author name cant be empty");
         }
-        if (result.isEmpty()) {
-            throw new BookNotFoundException("No books found with title: " + author);
-        }
+        
+         List<Book> books = bookRepository.findByAuthorContainingIgnoreCase(author);
 
-    return result;
+        if(books.isEmpty()){
+            throw new BookNotFoundException("No books found with title: "+ author);
+        }
+        return books;
+    
     }
 
 }
