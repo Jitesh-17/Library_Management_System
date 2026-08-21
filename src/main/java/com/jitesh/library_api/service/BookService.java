@@ -2,12 +2,16 @@ package com.jitesh.library_api.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+
+import com.jitesh.library_api.dto.BookPageResponse;
 import com.jitesh.library_api.dto.BookRequest;
 import com.jitesh.library_api.model.Book;
 
+
 public interface BookService {
 
-    List<Book> getAllBooks();
+    BookPageResponse getAllBooks(Pageable pageable);
 
     Book addBook(BookRequest request);
     Book getBookById(Long id);

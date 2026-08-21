@@ -2,12 +2,15 @@ package com.jitesh.library_api.service.impl;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.jitesh.library_api.dto.BookPageResponse;
 import com.jitesh.library_api.dto.BookRequest;
-import com.jitesh.library_api.exception.BookNotFoundException;
+import  com.jitesh.library_api.exception.BookNotFoundException;
 import com.jitesh.library_api.model.Book;
-import  com.jitesh.library_api.repository.BookRepository;
+import com.jitesh.library_api.repository.BookRepository;
 import com.jitesh.library_api.service.BookService;
 
 @Service
@@ -21,10 +24,19 @@ public class BookServiceImpl implements BookService {
 
 
     @Override
-    public List<Book> getAllBooks() {
-    return bookRepository.findAll();
-    }
+    public BookPageResponse getAllBooks(Pageable pageable) {
 
+    Page<Book> bookPage = bookRepository.findAll(pageable);
+
+        return new BookPageResponse(
+            bookPage.getContent(),
+            bookPage.getNumber(),
+            bookPage.getSize(),
+            bookPage.getTotalElements(),
+            bookPage.getTotalPages()
+        );
+    }
+    
   @Override
 public Book addBook(BookRequest request) {
 

@@ -2,6 +2,7 @@ package com.jitesh.library_api.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jitesh.library_api.dto.BookPageResponse;
 import com.jitesh.library_api.dto.BookRequest;
 import com.jitesh.library_api.model.Book;
 import com.jitesh.library_api.service.BookService;
@@ -36,8 +38,8 @@ public class BookController {
 
     // @GetMapping("/books")
     @GetMapping
-    public List<Book> getAllBooks(){
-        return bookService.getAllBooks();
+    public ResponseEntity<BookPageResponse> getAllBooks(Pageable pageable) {
+         return ResponseEntity.ok(bookService.getAllBooks(pageable));
     }
 
     // @PostMapping("/books")
