@@ -3,6 +3,9 @@ package com.jitesh.library_api.controller;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+// import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +22,7 @@ import com.jitesh.library_api.dto.BookPageResponse;
 import com.jitesh.library_api.dto.BookRequest;
 import com.jitesh.library_api.model.Book;
 import com.jitesh.library_api.service.BookService;
+import com.jitesh.library_api.validation.PaginationValidator;
 
 import jakarta.validation.Valid;
 
@@ -31,15 +35,32 @@ import jakarta.validation.Valid;
 public class BookController {
     
     private final BookService bookService;
-
-    public BookController(BookService bookService){
+    private final PaginationValidator paginationValidator;
+    public BookController(BookService bookService ,PaginationValidator paginationValidator){
         this.bookService = bookService;
+        this.paginationValidator = paginationValidator;
     }
 
     // @GetMapping("/books")
     @GetMapping
-    public ResponseEntity<BookPageResponse> getAllBooks(Pageable pageable) {
-         return ResponseEntity.ok(bookService.getAllBooks(pageable));
+    public ResponseEntity<BookPageResponse> getAllBooks(
+        @RequestParam(defaultValue = "0")int page,
+        @RequestParam(defaultValue = "10")int size,
+        @RequestParam(defaultValue = "id") String sortBy,
+        @RequestParam(defaultValue = "asc")String direction){
+
+            paginationValidator.validate(
+                page,size,sortBy,direction
+            );
+            Pageable pageable;
+            
+            if(direction.equalsIgnoreCase("desc")){
+                pageable = PageRequest.of(page,size,Sort.by(sortBy).descending());
+            }else{
+                pageable = PageRequest.of(page,size,Sort.by(sortBy).ascending());
+            }
+
+        return ResponseEntity.ok(bookService.getAllBooks(pageable));
     }
 
     // @PostMapping("/books")
