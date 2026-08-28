@@ -79,6 +79,20 @@ public class GlobalExceptionHandler {
             .status(HttpStatus.BAD_REQUEST)
             .body(response);
     }
+    @ExceptionHandler(MemberNotFoundException.class)
+        public ResponseEntity<ErrorResponse> handleMemberNotFound(
+        MemberNotFoundException exception) {
+
+        ErrorResponse error = new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.NOT_FOUND.value(),
+            exception.getMessage()
+    );
+
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(error);
+    }
 
     //unexpected errors
     @ExceptionHandler(Exception.class)
