@@ -94,6 +94,51 @@ public class GlobalExceptionHandler {
             .body(error);
     }
 
+    @ExceptionHandler(BookAlreadyBorrowedException.class)
+    public ResponseEntity<ErrorResponse> handleBookAlreadyBorrowed( 
+        BookAlreadyBorrowedException exception) {
+
+        ErrorResponse response = new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.CONFLICT.value(),
+            exception.getMessage()
+    );
+
+        return ResponseEntity
+            .status(HttpStatus.CONFLICT)
+                .body(response);
+    }
+
+    @ExceptionHandler(BorrowRecordNotFoundException.class)
+        public ResponseEntity<ErrorResponse> handleBorrowRecordNotFound(
+        BorrowRecordNotFoundException exception) {
+
+        ErrorResponse response = new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.NOT_FOUND.value(),
+            exception.getMessage()
+        );
+
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(response);
+    }
+
+    @ExceptionHandler(BookAlreadyReturnedException.class)
+        public ResponseEntity<ErrorResponse> handleBookAlreadyReturned(
+        BookAlreadyReturnedException exception) {
+
+        ErrorResponse response = new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.CONFLICT.value(),
+            exception.getMessage()
+        );
+
+        return ResponseEntity
+            .status(HttpStatus.CONFLICT)
+            .body(response);
+    }
+
     //unexpected errors
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception exception){
@@ -106,4 +151,5 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
+
 }
