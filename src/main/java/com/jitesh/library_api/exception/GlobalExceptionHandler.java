@@ -139,6 +139,17 @@ public class GlobalExceptionHandler {
             .body(response);
     }
 
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handlerUserAlreadyExists(UserAlreadyExistsException exception){
+
+        ErrorResponse error = new ErrorResponse(
+             LocalDateTime.now(),
+        HttpStatus.CONFLICT.value(),exception.getMessage()
+        );
+
+        return new ResponseEntity<>(error,HttpStatus.CONFLICT);
+    }
+
     //unexpected errors
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception exception){
