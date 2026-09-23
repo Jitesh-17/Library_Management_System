@@ -1,0 +1,21 @@
+package com.jitesh.library_api.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter 
+@NoArgsConstructor 
+@AllArgsConstructor
+public class LoginRequest {
+
+    @NotBlank(message = "Username or email is required")
+    private String identifier;
+
+    @NotBlank(message = "password is required")
+    private String password;
+   
+}
