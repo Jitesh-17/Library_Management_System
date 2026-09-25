@@ -7,8 +7,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jitesh.library_api.dto.UserRequest;
 import com.jitesh.library_api.dto.LoginRequest;
+import com.jitesh.library_api.dto.LoginResponse;
+import com.jitesh.library_api.dto.UserRequest;
 import com.jitesh.library_api.dto.UserResponse;
 import com.jitesh.library_api.service.UserService;
 
@@ -33,8 +34,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserResponse> login(@Valid @RequestBody LoginRequest request){
-        UserResponse response = userService.loginUser(request);
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request){
+        LoginResponse response = userService.loginUser(request);
 
         return ResponseEntity.ok(response);
     }

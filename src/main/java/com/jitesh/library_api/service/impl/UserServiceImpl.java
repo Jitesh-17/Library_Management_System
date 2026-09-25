@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.jitesh.library_api.dto.LoginRequest;
+import com.jitesh.library_api.dto.LoginResponse;
 import com.jitesh.library_api.dto.UserRequest;
 import com.jitesh.library_api.dto.UserResponse;
 import com.jitesh.library_api.exception.UserAlreadyExistsException;
@@ -52,7 +53,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override 
-    public UserResponse loginUser(LoginRequest request){
+    public LoginResponse loginUser(LoginRequest request){
         User user = findUserByIdentifier(request.getIdentifier());
 
         if (!passwordEncoder.matches(
@@ -62,10 +63,10 @@ public class UserServiceImpl implements UserService{
             throw new BadCredentialsException("Invalid username/email or password");
         }
 
-        return new UserResponse(
-        user.getId(),
+        String token = jwtService.generateToken(user);
+        return new LoginResponse(
+        token,
         user.getUserName(),
-        user.getEmail(),
         user.getRole()
         );
 
