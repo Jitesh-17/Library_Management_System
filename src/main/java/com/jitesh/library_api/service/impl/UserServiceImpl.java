@@ -1,26 +1,30 @@
 package com.jitesh.library_api.service.impl;
 
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import com.jitesh.library_api.dto.LoginRequest;
 import com.jitesh.library_api.dto.UserRequest;
 import com.jitesh.library_api.dto.UserResponse;
 import com.jitesh.library_api.exception.UserAlreadyExistsException;
 import com.jitesh.library_api.model.User;
 import com.jitesh.library_api.repository.UserRepository;
+import com.jitesh.library_api.service.JwtService;
 import com.jitesh.library_api.service.UserService;
-import org.springframework.security.authentication.BadCredentialsException;
 
 @Service 
 public class UserServiceImpl implements UserService{
     
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public UserServiceImpl(UserRepository userRepository,PasswordEncoder passwordEncoder){
+    public UserServiceImpl(UserRepository userRepository,PasswordEncoder passwordEncoder,JwtService jwtService){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     @Override 
